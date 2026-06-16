@@ -4,7 +4,7 @@ MVP frontend shell for **B2B Lead Finder AI — Поиск клиентов дл
 
 ## Current scope
 
-Implemented through Stage 4:
+Implemented through Stage 5:
 
 - React + TypeScript + Vite + Tailwind CSS app shell.
 - MVP routes and placeholder screens.
@@ -13,22 +13,32 @@ Implemented through Stage 4:
 - Feedback states: loading, error, empty.
 - Basic UI status constants.
 - Supabase public frontend env validation and config files.
+- Supabase Auth client setup.
+- Login, registration, password recovery, session provider, protected routes and logout UI.
 
 Not implemented yet by design:
 
-- auth;
-- database tables;
+- profiles;
+- business database tables;
 - RLS policies;
 - AI/API integrations;
 - import/export;
 - scraping/parsing;
 - payments;
-- real user data;
-- business logic.
+- real business data;
+- project or lead business logic.
 
 ## Routes
 
+Public routes:
+
 - `/`
+- `/login`
+- `/register`
+- `/forgot-password`
+
+Private routes guarded by session check:
+
 - `/dashboard`
 - `/projects`
 - `/leads`
@@ -59,8 +69,6 @@ Feedback components are exported from `src/components/feedback`:
 
 ## Supabase public frontend config
 
-Stage 4 adds configuration only. Registration, login, profiles, tables, RLS and data queries are not implemented yet.
-
 Create `.env.local` from `.env.example` and fill only public frontend variables:
 
 ```bash
@@ -82,7 +90,7 @@ Never put these values in frontend env or frontend code:
 - Payment provider secrets.
 - Webhook secrets.
 
-The app validates that required public variables exist before exposing Supabase config. If they are missing, `supabaseClientConfig` is `null` and no network request is made.
+The app checks the public config before creating the Supabase browser client. If required env variables are missing, auth forms show an error and no private screen is displayed.
 
 ## Run
 
