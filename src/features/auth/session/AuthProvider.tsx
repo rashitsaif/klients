@@ -1,4 +1,5 @@
 import type { AuthError, Session, User } from '@supabase/supabase-js';
+import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { getSupabaseClient, isSupabaseConfigured, supabasePublicEnvValidationErrors } from '../../../lib/supabaseClient';
 
@@ -26,7 +27,7 @@ function getMissingConfigError() {
 }
 
 interface AuthProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
