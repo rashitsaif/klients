@@ -1,10 +1,11 @@
+import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import { LoadingState } from '../../../components/feedback';
 import { navigateToPath } from '../../../app/router/routes';
 import { useAuth } from '../session/AuthProvider';
 
 interface PublicRouteProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function PublicRoute({ children }: PublicRouteProps) {
