@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import { LoadingState } from '../../../components/feedback';
-import { navigateToPath } from '../../../app/router/routes';
+import { navigateToPath } from '../../../app/router/navigation';
 import { useAuth } from '../session/AuthProvider';
 
 interface PublicRouteProps {
