@@ -1,3 +1,4 @@
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { getSupabasePublicEnv, validateSupabasePublicEnv } from '../config';
 
 export interface SupabaseBrowserClientConfig {
@@ -16,3 +17,23 @@ export const supabaseClientConfig: SupabaseBrowserClientConfig | null = isSupaba
       supabaseUrl: supabasePublicEnv.supabaseUrl,
     }
   : null;
+
+let browserClient: SupabaseClient | null = null;
+
+export function getSupabaseClient(): SupabaseClient | null {
+  if (!supabaseClientConfig) {
+    return null;
+  }
+
+  if (!browserClient) {
+    browserClient = createClient(supabaseClientConfig.supabaseUrl, supabaseClientConfig.supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        persistSession: true,
+      },
+    });
+  }
+
+  return browserClient;
+}
