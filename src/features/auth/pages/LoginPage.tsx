@@ -2,7 +2,7 @@ import type { FormEvent } from 'react';
 import { useState } from 'react';
 import { ErrorState } from '../../../components/feedback';
 import { Button, Input } from '../../../components/ui';
-import { navigateToPath } from '../../../app/router/routes';
+import { navigateToPath } from '../../../app/router/navigation';
 import { useAuth } from '../session/AuthProvider';
 import { AuthLayout } from './AuthLayout';
 
