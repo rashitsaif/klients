@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import AppLayout from '../../components/layout/AppLayout';
 import { ErrorState } from '../../components/feedback';
 import PlaceholderPage from '../../pages/PlaceholderPage';
+import { AuthProvider } from '../../features/auth';
 import { getRouteByPath } from './routes';
 
 function getCurrentPath(): string {
@@ -23,19 +24,21 @@ function AppRouter() {
   }, []);
 
   return (
-    <AppLayout currentPath={currentPath}>
-      {currentRoute.element ?? (
-        <PlaceholderPage
-          title="Страница не найдена"
-          eyebrow="404 · placeholder"
-          description="Такого маршрута нет в каркасе MVP. Используйте навигацию, чтобы перейти к одному из утвержденных экранов."
-          plannedItems={['Без редиректов и скрытой логики', 'Без обращения к API', 'Без фейковых данных']}
-          safetyNote="404-экран использует ErrorState только как UI-состояние без логирования и внешних сервисов."
-        >
-          <ErrorState title="Маршрут отсутствует" />
-        </PlaceholderPage>
-      )}
-    </AppLayout>
+    <AuthProvider>
+      <AppLayout currentPath={currentPath}>
+        {currentRoute.element ?? (
+          <PlaceholderPage
+            title="Страница не найдена"
+            eyebrow="404 · placeholder"
+            description="Такого маршрута нет в каркасе MVP. Используйте навигацию, чтобы перейти к одному из утвержденных экранов."
+            plannedItems={['Без редиректов и скрытой логики', 'Без обращения к API', 'Без фейковых данных']}
+            safetyNote="404-экран использует ErrorState только как UI-состояние без логирования и внешних сервисов."
+          >
+            <ErrorState title="Маршрут отсутствует" />
+          </PlaceholderPage>
+        )}
+      </AppLayout>
+    </AuthProvider>
   );
 }
 
