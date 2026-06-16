@@ -1,19 +1,23 @@
 import type { ReactNode } from 'react';
 
-export interface TableColumn<T> {
+export interface TableColumn<T extends object> {
   key: keyof T;
   label: string;
 }
 
-export interface TableProps<T extends Record<string, ReactNode>> {
+export interface TableProps<T extends object> {
   columns: TableColumn<T>[];
   emptyMessage?: string;
   rows: T[];
 }
 
-function Table<T extends Record<string, ReactNode>>({ columns, emptyMessage = 'Данных пока нет.', rows }: TableProps<T>) {
+function Table<T extends object>({ columns, emptyMessage = 'Данных пока нет.', rows }: TableProps<T>) {
   if (rows.length === 0) {
-    return <div className="rounded-2xl border border-dashed border-slate-700 p-6 text-center text-sm text-slate-500">{emptyMessage}</div>;
+    return (
+      <div className="rounded-2xl border border-dashed border-slate-700 p-6 text-center text-sm text-slate-500">
+        {emptyMessage}
+      </div>
+    );
   }
 
   return (
@@ -22,7 +26,9 @@ function Table<T extends Record<string, ReactNode>>({ columns, emptyMessage = '�
         <thead className="bg-slate-900 text-slate-400">
           <tr>
             {columns.map((column) => (
-              <th className="px-4 py-3 font-semibold" key={String(column.key)}>{column.label}</th>
+              <th className="px-4 py-3 font-semibold" key={String(column.key)}>
+                {column.label}
+              </th>
             ))}
           </tr>
         </thead>
@@ -30,7 +36,9 @@ function Table<T extends Record<string, ReactNode>>({ columns, emptyMessage = '�
           {rows.map((row, index) => (
             <tr key={index}>
               {columns.map((column) => (
-                <td className="px-4 py-3" key={String(column.key)}>{row[column.key]}</td>
+                <td className="px-4 py-3" key={String(column.key)}>
+                  {row[column.key] as ReactNode}
+                </td>
               ))}
             </tr>
           ))}
