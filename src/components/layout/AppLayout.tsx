@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { Button } from '../ui';
 import { NAVIGATION_ROUTES, navigateToPath } from '../../app/router/routes';
+import { SignOutButton, useAuth } from '../../features/auth';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -10,11 +11,14 @@ interface AppLayoutProps {
 
 function AppLayout({ children, currentPath }: AppLayoutProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
 
   const handleNavigate = (path: string) => {
     navigateToPath(path);
     setIsMenuOpen(false);
   };
+
+  const visibleRoutes = NAVIGATION_ROUTES.filter((route) => !route.requiresAuth || isAuthenticated);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
@@ -26,7 +30,7 @@ function AppLayout({ children, currentPath }: AppLayoutProps) {
           </button>
 
           <nav className="hidden items-center gap-2 lg:flex" aria-label="Основная навигация">
-            {NAVIGATION_ROUTES.map((route) => (
+            {visibleRoutes.map((route) => (
               <button
                 className={`rounded-xl px-3 py-2 text-sm transition ${currentPath === route.path ? 'bg-cyan-400 text-slate-950' : 'text-slate-300 hover:bg-slate-900 hover:text-white'}`}
                 key={route.path}
@@ -38,6 +42,17 @@ function AppLayout({ children, currentPath }: AppLayoutProps) {
             ))}
           </nav>
 
+          <div className="hidden items-center gap-3 lg:flex">
+            {isLoading ? <span className="text-xs text-slate-500">Проверка сессии...</span> : null}
+            {!isLoading && !isAuthenticated ? (
+              <>
+                <Button onClick={() => handleNavigate('/login')} variant="ghost">Войти</Button>
+                <Button onClick={() => handleNavigate('/register')} variant="primary">Регистрация</Button>
+              </>
+            ) : null}
+            <SignOutButton />
+          </div>
+
           <Button className="lg:hidden" onClick={() => setIsMenuOpen((value) => !value)} variant="secondary">
             Меню
           </Button>
@@ -46,7 +61,7 @@ function AppLayout({ children, currentPath }: AppLayoutProps) {
         {isMenuOpen ? (
           <nav className="border-t border-slate-800 px-4 py-3 lg:hidden" aria-label="Мобильная навигация">
             <div className="grid gap-2">
-              {NAVIGATION_ROUTES.map((route) => (
+              {visibleRoutes.map((route) => (
                 <button
                   className={`rounded-xl px-3 py-2 text-left text-sm ${currentPath === route.path ? 'bg-cyan-400 text-slate-950' : 'text-slate-300 hover:bg-slate-900'}`}
                   key={route.path}
@@ -56,6 +71,13 @@ function AppLayout({ children, currentPath }: AppLayoutProps) {
                   {route.label}
                 </button>
               ))}
+              {!isLoading && !isAuthenticated ? (
+                <>
+                  <Button onClick={() => handleNavigate('/login')} variant="ghost">Войти</Button>
+                  <Button onClick={() => handleNavigate('/register')} variant="primary">Регистрация</Button>
+                </>
+              ) : null}
+              <SignOutButton />
             </div>
           </nav>
         ) : null}
