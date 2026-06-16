@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { navigateToPath } from '../../../app/router/routes';
+import { navigateToPath } from '../../../app/router/navigation';
 import { Button } from '../../../components/ui';
 import { useAuth } from '../session/AuthProvider';
 
