@@ -16,14 +16,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: ProfileUpdateInput;
-        Relationships: [
-          {
-            foreignKeyName: 'profiles_user_id_fkey';
-            columns: ['user_id'];
-            referencedRelation: 'users';
-            referencedColumns: ['id'];
-          },
-        ];
+        Relationships: [];
       };
     };
     Views: Record<string, never>;
