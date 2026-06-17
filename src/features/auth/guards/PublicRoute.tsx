@@ -18,7 +18,7 @@ export function PublicRoute({ children }: PublicRouteProps) {
   }, [isAuthenticated, isLoading]);
 
   if (isLoading) {
-    return <LoadingState title="Проверяем сессию" description="Если сессия уже активна, вы будете перенаправлены в личный кабинет." />;
+    return <LoadingState title="Проверяем сессию" />;
   }
 
   if (isAuthenticated) {
