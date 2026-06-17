@@ -25,11 +25,12 @@ Role values: `user`, `admin`.
 
 Security:
 
-- users can read only their own profile;
-- users can update only their own profile;
-- frontend can update only `full_name` and `company_name`;
-- frontend does not send role updates;
-- profile is created after auth signup by a database trigger.
+- RLS is enabled on `public.profiles`;
+- users can read only their own profile by `auth.uid() = user_id`;
+- users can update only their own profile by `auth.uid() = user_id`;
+- authenticated frontend clients are granted update only for `full_name` and `company_name`;
+- authenticated frontend clients cannot update `role`, `user_id`, or `email`;
+- profile is created after auth signup by a Supabase database trigger.
 
 ## Env
 
@@ -56,3 +57,5 @@ npm run typecheck
 npm run build
 npm audit --audit-level=high
 ```
+
+`lint` and `test` are not configured yet.
