@@ -9,8 +9,8 @@ end $$;
 
 create table if not exists public.profiles (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users(id) on delete cascade,
-  email text,
+  user_id uuid not null unique references auth.users(id) on delete cascade,
+  email text not null,
   full_name text,
   company_name text,
   role public.profile_role not null default 'user',
@@ -28,6 +28,10 @@ alter table public.profiles add column if not exists created_at timestamptz not 
 alter table public.profiles add column if not exists updated_at timestamptz not null default now();
 
 update public.profiles
+set id = gen_random_uuid()
+where id is null;
+
+update public.profiles
 set role = 'user'
 where role is null;
 
@@ -35,7 +39,15 @@ update public.profiles
 set email = ''
 where email is null;
 
+-- Invalid orphan profile rows cannot be protected by auth.uid() and must not survive
+-- a strict profiles security migration.
+delete from public.profiles
+where user_id is null;
+
 alter table public.profiles alter column id set default gen_random_uuid();
+alter table public.profiles alter column id set not null;
+alter table public.profiles alter column user_id set not null;
+alter table public.profiles alter column email set not null;
 alter table public.profiles alter column role set default 'user';
 alter table public.profiles alter column role set not null;
 alter table public.profiles alter column created_at set default now();
@@ -43,9 +55,33 @@ alter table public.profiles alter column created_at set not null;
 alter table public.profiles alter column updated_at set default now();
 alter table public.profiles alter column updated_at set not null;
 
-create unique index if not exists profiles_user_id_unique_idx
-on public.profiles (user_id)
-where user_id is not null;
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'profiles_pkey'
+      and conrelid = 'public.profiles'::regclass
+  ) then
+    alter table public.profiles
+    add constraint profiles_pkey primary key (id);
+  end if;
+end $$;
+
+drop index if exists profiles_user_id_unique_idx;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'profiles_user_id_key'
+      and conrelid = 'public.profiles'::regclass
+  ) then
+    alter table public.profiles
+    add constraint profiles_user_id_key unique (user_id);
+  end if;
+end $$;
 
 do $$
 begin
@@ -128,7 +164,7 @@ begin
     coalesce(new.email, ''),
     nullif(trim(coalesce(new.raw_user_meta_data ->> 'full_name', '')), '')
   )
-  on conflict do nothing;
+  on conflict (user_id) do nothing;
 
   return new;
 end;
