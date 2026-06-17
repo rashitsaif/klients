@@ -32,7 +32,7 @@ export function ProfilePanel() {
   };
 
   if (isLoading) {
-    return <LoadingState title="Загружаем профиль" description="Профиль читается только для текущего пользователя." />;
+    return <LoadingState title="Загружаем профиль" />;
   }
 
   if (!profile) {
@@ -40,7 +40,12 @@ export function ProfilePanel() {
   }
 
   return (
-    <Card title="Профиль" description="Можно менять только имя и компанию. Role доступна только для чтения.">
+    <Card>
+      <div className="mb-5 grid gap-1">
+        <h2 className="text-xl font-semibold text-slate-50">Профиль</h2>
+        <p className="text-sm text-slate-400">Можно менять только имя и компанию. Role доступна только для чтения.</p>
+      </div>
+
       <form className="grid gap-4" onSubmit={handleSubmit}>
         <div className="grid gap-2 rounded-2xl border border-slate-800 bg-slate-950 p-4 text-sm">
           <div className="flex items-center justify-between gap-2">
