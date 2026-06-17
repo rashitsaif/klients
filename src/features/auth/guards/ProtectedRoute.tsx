@@ -20,12 +20,17 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }, [isAuthenticated, isLoading]);
 
   if (isLoading) {
-    return <LoadingState title="Проверяем сессию" description="Приватный экран будет показан только после проверки авторизации." />;
+    return <LoadingState title="Проверяем сессию" />;
   }
 
   if (!isAuthenticated) {
     return (
-      <Card title="Нужна авторизация" description="Перенаправляем на страницу входа. Приватные данные не отображаются до проверки сессии." />
+      <Card>
+        <div className="grid gap-2">
+          <h2 className="text-lg font-semibold text-white">Нужна авторизация</h2>
+          <p className="text-sm text-slate-400">Перенаправляем на страницу входа. Приватные данные не отображаются до проверки сессии.</p>
+        </div>
+      </Card>
     );
   }
 
