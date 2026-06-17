@@ -50,7 +50,9 @@ The frontend cannot update `role`, `user_id`, or `email`.
 
 - apply migration in Supabase;
 - confirm `public.profiles` has RLS enabled;
+- confirm `id` is a primary key;
 - confirm `user_id` is `not null`, unique, and references `auth.users(id)`;
+- confirm `email` is `not null`;
 - register user A and confirm one profile row is created;
 - register user B and confirm one profile row is created;
 - user A can read only user A profile;
