@@ -26,6 +26,9 @@ Role values: `user`, `admin`.
 Security:
 
 - RLS is enabled on `public.profiles`;
+- `id` is a non-null primary key;
+- `user_id` is non-null, unique, and references `auth.users(id)` with `on delete cascade`;
+- `email` is non-null;
 - users can read only their own profile by `auth.uid() = user_id`;
 - users can update only their own profile by `auth.uid() = user_id`;
 - authenticated frontend clients are granted update only for `full_name` and `company_name`;
