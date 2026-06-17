@@ -9,14 +9,59 @@ end $$;
 
 create table if not exists public.profiles (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null unique references auth.users(id) on delete cascade,
-  email text not null,
+  user_id uuid references auth.users(id) on delete cascade,
+  email text,
   full_name text,
   company_name text,
   role public.profile_role not null default 'user',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.profiles add column if not exists id uuid default gen_random_uuid();
+alter table public.profiles add column if not exists user_id uuid;
+alter table public.profiles add column if not exists email text;
+alter table public.profiles add column if not exists full_name text;
+alter table public.profiles add column if not exists company_name text;
+alter table public.profiles add column if not exists role public.profile_role not null default 'user';
+alter table public.profiles add column if not exists created_at timestamptz not null default now();
+alter table public.profiles add column if not exists updated_at timestamptz not null default now();
+
+update public.profiles
+set role = 'user'
+where role is null;
+
+update public.profiles
+set email = ''
+where email is null;
+
+alter table public.profiles alter column id set default gen_random_uuid();
+alter table public.profiles alter column role set default 'user';
+alter table public.profiles alter column role set not null;
+alter table public.profiles alter column created_at set default now();
+alter table public.profiles alter column created_at set not null;
+alter table public.profiles alter column updated_at set default now();
+alter table public.profiles alter column updated_at set not null;
+
+create unique index if not exists profiles_user_id_unique_idx
+on public.profiles (user_id)
+where user_id is not null;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'profiles_user_id_fkey'
+      and conrelid = 'public.profiles'::regclass
+  ) then
+    alter table public.profiles
+    add constraint profiles_user_id_fkey
+    foreign key (user_id)
+    references auth.users(id)
+    on delete cascade;
+  end if;
+end $$;
 
 alter table public.profiles enable row level security;
 
@@ -83,7 +128,7 @@ begin
     coalesce(new.email, ''),
     nullif(trim(coalesce(new.raw_user_meta_data ->> 'full_name', '')), '')
   )
-  on conflict (user_id) do nothing;
+  on conflict do nothing;
 
   return new;
 end;
