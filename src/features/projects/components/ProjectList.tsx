@@ -30,7 +30,7 @@ export function ProjectList({ disabled = false, onArchive, onEdit, projects }: P
             <div>
               <div className="flex flex-wrap items-center gap-3">
                 <h3 className="text-lg font-semibold text-slate-100">{project.name}</h3>
-                <Badge variant={project.status === 'active' ? 'success' : 'warning'}>{project.status === 'active' ? 'active' : 'archived'}</Badge>
+                <Badge variant={project.status === 'active' ? 'info' : 'warning'}>{project.status === 'active' ? 'active' : 'archived'}</Badge>
               </div>
               <p className="mt-2 text-sm leading-6 text-slate-400">{project.service_description}</p>
             </div>
