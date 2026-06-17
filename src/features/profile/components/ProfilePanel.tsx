@@ -49,7 +49,7 @@ export function ProfilePanel() {
           </div>
           <div className="flex items-center justify-between gap-2">
             <span className="text-slate-500">Role</span>
-            <Badge variant={profile.role === 'admin' ? 'warning' : 'success'}>{profile.role}</Badge>
+            <Badge variant={profile.role === 'admin' ? 'warning' : 'info'}>{profile.role}</Badge>
           </div>
         </div>
 
