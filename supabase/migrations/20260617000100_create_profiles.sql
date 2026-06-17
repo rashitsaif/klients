@@ -43,15 +43,20 @@ before update on public.profiles
 for each row
 execute function public.set_profiles_updated_at();
 
-create or replace function public.prevent_profile_role_change()
+create or replace function public.prevent_authenticated_profile_protected_fields_change()
 returns trigger
 language plpgsql
 security definer
 set search_path = public
 as $$
 begin
-  if old.role is distinct from new.role then
-    raise exception 'profile role cannot be changed from the client';
+  if auth.role() = 'authenticated'
+     and (
+       old.user_id is distinct from new.user_id
+       or old.email is distinct from new.email
+       or old.role is distinct from new.role
+     ) then
+    raise exception 'profile protected fields cannot be changed from the client';
   end if;
 
   return new;
@@ -59,10 +64,11 @@ end;
 $$;
 
 drop trigger if exists prevent_profile_role_change on public.profiles;
-create trigger prevent_profile_role_change
-before update of role on public.profiles
+drop trigger if exists prevent_authenticated_profile_protected_fields_change on public.profiles;
+create trigger prevent_authenticated_profile_protected_fields_change
+before update on public.profiles
 for each row
-execute function public.prevent_profile_role_change();
+execute function public.prevent_authenticated_profile_protected_fields_change();
 
 create or replace function public.handle_new_auth_user_profile()
 returns trigger
