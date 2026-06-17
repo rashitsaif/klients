@@ -97,20 +97,9 @@ export async function updateProject(projectId: string, input: ProjectUpdateInput
     return { data: null, error: userResult.error ?? getMissingSessionError() };
   }
 
-  const safeUpdate: ProjectUpdateInput = {
-    name: input.name,
-    service_description: input.service_description,
-    target_audience: input.target_audience,
-    offer: input.offer,
-    region: input.region,
-    niches: input.niches,
-    tone: input.tone,
-    status: input.status,
-  };
-
   const { data, error } = await supabase
     .from('projects')
-    .update(safeUpdate)
+    .update(input)
     .eq('id', projectId)
     .eq('user_id', userResult.data)
     .select(PROJECT_COLUMNS)
