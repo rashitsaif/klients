@@ -23,8 +23,8 @@ export function useProjects() {
     setError(null);
     const result = await createProject(input);
     setError(result.error?.message ?? null);
-    setIsSaving(false);
     await reloadProjects();
+    setIsSaving(false);
     return result;
   }, [reloadProjects]);
 
@@ -33,8 +33,8 @@ export function useProjects() {
     setError(null);
     const result = await updateProject(projectId, input);
     setError(result.error?.message ?? null);
-    setIsSaving(false);
     await reloadProjects();
+    setIsSaving(false);
     return result;
   }, [reloadProjects]);
 
@@ -43,8 +43,8 @@ export function useProjects() {
     setError(null);
     const result = await archiveProject(projectId);
     setError(result.error?.message ?? null);
-    setIsSaving(false);
     await reloadProjects();
+    setIsSaving(false);
     return result;
   }, [reloadProjects]);
 
