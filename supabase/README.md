@@ -10,14 +10,20 @@ Migration file:
 supabase/migrations/20260617000100_create_profiles.sql
 ```
 
-Creates:
+Creates/stabilizes:
 
 - enum `public.profile_role` with values `user`, `admin`;
 - table `public.profiles`;
+- strict non-null ownership: `profiles.user_id` is `not null`;
+- strict non-null email snapshot: `profiles.email` is `not null`;
+- `profiles.id` is non-null primary key;
+- unique `profiles.user_id` constraint;
 - `user_id` foreign key to `auth.users(id)` with `on delete cascade`;
 - RLS on `public.profiles`;
 - trigger that creates a profile after new auth user registration;
 - trigger that prevents authenticated frontend clients from changing protected fields.
+
+Note: if an earlier unstable draft migration created orphan profile rows without `user_id`, this migration removes those orphan rows because they cannot be safely protected by `auth.uid()`.
 
 ## RLS and grants
 
@@ -43,6 +49,8 @@ The frontend cannot update `role`, `user_id`, or `email`.
 ## Required manual checks for Stage 6
 
 - apply migration in Supabase;
+- confirm `public.profiles` has RLS enabled;
+- confirm `user_id` is `not null`, unique, and references `auth.users(id)`;
 - register user A and confirm one profile row is created;
 - register user B and confirm one profile row is created;
 - user A can read only user A profile;
