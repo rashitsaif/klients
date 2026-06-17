@@ -1,13 +1,17 @@
+import { ProfilePanel } from '../features/profile/components/ProfilePanel';
 import PlaceholderPage from './PlaceholderPage';
 
 function SettingsPage() {
   return (
     <PlaceholderPage
       title="Настройки"
-      eyebrow="placeholder · settings"
-      description="Здесь позже появятся настройки профиля, источников, лимитов и списка исключений. Сейчас настройки не сохраняются."
-      plannedItems={['профиль после этапа auth и profiles', 'список исключений отдельным этапом', 'лимиты только после backend-проверок']}
-    />
+      eyebrow="profiles · settings"
+      description="На этом этапе подключен только профиль пользователя. Остальные настройки будут добавлены отдельными безопасными этапами."
+      plannedItems={['профиль текущего пользователя через RLS', 'список исключений отдельным этапом', 'лимиты только после backend-проверок']}
+      safetyNote="Role отображается только для чтения. Клиент обновляет только full_name и company_name."
+    >
+      <ProfilePanel />
+    </PlaceholderPage>
   );
 }
 
