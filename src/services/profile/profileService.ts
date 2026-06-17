@@ -3,13 +3,21 @@ import type { Profile, ProfileUpdateInput } from '../../types';
 
 const PROFILE_COLUMNS = 'id,user_id,email,full_name,company_name,role,created_at,updated_at';
 
-export interface ProfileServiceResult<T> {
-  data: T | null;
-  error: Error | null;
+export interface ProfileServiceError {
+  message: string;
 }
 
-function getMissingClientError() {
-  return new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local.');
+export interface ProfileServiceResult<T> {
+  data: T | null;
+  error: ProfileServiceError | null;
+}
+
+function getMissingClientError(): ProfileServiceError {
+  return { message: 'Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local.' };
+}
+
+function getMissingSessionError(): ProfileServiceError {
+  return { message: 'User session not found.' };
 }
 
 export async function getMyProfile(): Promise<ProfileServiceResult<Profile>> {
@@ -22,7 +30,7 @@ export async function getMyProfile(): Promise<ProfileServiceResult<Profile>> {
   const { data: userData, error: userError } = await supabase.auth.getUser();
 
   if (userError || !userData.user) {
-    return { data: null, error: userError ?? new Error('User session not found.') };
+    return { data: null, error: userError ?? getMissingSessionError() };
   }
 
   const { data, error } = await supabase
@@ -44,7 +52,7 @@ export async function updateMyProfile(input: ProfileUpdateInput): Promise<Profil
   const { data: userData, error: userError } = await supabase.auth.getUser();
 
   if (userError || !userData.user) {
-    return { data: null, error: userError ?? new Error('User session not found.') };
+    return { data: null, error: userError ?? getMissingSessionError() };
   }
 
   const safeUpdate: ProfileUpdateInput = {
