@@ -36,10 +36,15 @@ async function getCurrentUserId(): Promise<ProjectServiceResult<string>> {
   return { data: userData.user.id, error: null };
 }
 
-export async function listMyProjects(): Promise<ProjectServiceResult<Project[]>> {
+function createBaseProjectQuery() {
   const supabase = getSupabaseClient();
+  return supabase?.from('projects') ?? null;
+}
 
-  if (!supabase) {
+export async function listMyProjects(): Promise<ProjectServiceResult<Project[]>> {
+  const query = createBaseProjectQuery();
+
+  if (!query) {
     return { data: null, error: getMissingClientError() };
   }
 
@@ -49,8 +54,7 @@ export async function listMyProjects(): Promise<ProjectServiceResult<Project[]>>
     return { data: null, error: userResult.error ?? getMissingSessionError() };
   }
 
-  const { data, error } = await supabase
-    .from('projects')
+  const { data, error } = await query
     .select(PROJECT_COLUMNS)
     .eq('user_id', userResult.data)
     .order('updated_at', { ascending: false });
@@ -59,9 +63,9 @@ export async function listMyProjects(): Promise<ProjectServiceResult<Project[]>>
 }
 
 export async function createProject(input: ProjectCreateInput): Promise<ProjectServiceResult<Project>> {
-  const supabase = getSupabaseClient();
+  const query = createBaseProjectQuery();
 
-  if (!supabase) {
+  if (!query) {
     return { data: null, error: getMissingClientError() };
   }
 
@@ -71,8 +75,7 @@ export async function createProject(input: ProjectCreateInput): Promise<ProjectS
     return { data: null, error: userResult.error ?? getMissingSessionError() };
   }
 
-  const { data, error } = await supabase
-    .from('projects')
+  const { data, error } = await query
     .insert({
       ...input,
       status: input.status ?? 'active',
@@ -85,9 +88,9 @@ export async function createProject(input: ProjectCreateInput): Promise<ProjectS
 }
 
 export async function updateProject(projectId: string, input: ProjectUpdateInput): Promise<ProjectServiceResult<Project>> {
-  const supabase = getSupabaseClient();
+  const query = createBaseProjectQuery();
 
-  if (!supabase) {
+  if (!query) {
     return { data: null, error: getMissingClientError() };
   }
 
@@ -97,8 +100,7 @@ export async function updateProject(projectId: string, input: ProjectUpdateInput
     return { data: null, error: userResult.error ?? getMissingSessionError() };
   }
 
-  const { data, error } = await supabase
-    .from('projects')
+  const { data, error } = await query
     .update(input)
     .eq('id', projectId)
     .eq('user_id', userResult.data)
